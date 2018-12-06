@@ -1,0 +1,25 @@
+__pycache__/
+.ipynb_checkpoints/
+.scannerwork/
+.vscode/
+.pytest_cache/
+api_keys/
+build/
+customers/
+data/
+dist/
+Documentation/
+intralinks.egg-info/
+**/*.py[cod]
+**/*.xls
+**/*.xlsx
+**/*.json
+**/*.pickle
+**/*.bat
+**/*.html
+**/*.zip
+**/*.js
+*.ipynb
+!Sample - *.ipynb
+.coverage
+overage.xml
