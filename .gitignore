@@ -22,4 +22,5 @@ intralinks.egg-info/
 *.ipynb
 !Sample - *.ipynb
 .coverage
+.pypirc
 overage.xml

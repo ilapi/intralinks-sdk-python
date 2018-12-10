@@ -126,6 +126,7 @@ class UserManager:
         exchanges_by_id = {e['id']:self._prepare_entity('exchange', e, skip=SKIP_EXCHANGE_KEYS) for e in self.exchanges}
         intralinks_users_by_id = {u['userId']:self._prepare_entity('intralinks_user', u, skip=SKIP_INTRALINKS_USER_KEYS) for u in self.intralinks_users}
         exchange_members_by_id = {m['id']:self._prepare_entity('exchange_member', m, skip=SKIP_EXCHANGE_MEMBER_KEYS) for m in self.exchange_members}
+        removed_exchange_members_by_id = {m['id']:self._prepare_entity('exchange_member', m, skip=SKIP_EXCHANGE_MEMBER_KEYS) for m in self.removed_exchange_members}
         groups_by_id = {g['id']:self._prepare_entity('group', g, skip=SKIP_GROUP_KEYS) for g in self.groups}
 
         rows = []
@@ -143,9 +144,9 @@ class UserManager:
             rows.append(d)
 
         for m in self.removed_exchange_members:
-            d = {'row_type':'DELETED_EXCHANGE_MEMBER'}
+            d = {'row_type':'REMOVED_EXCHANGE_MEMBER'}
             d.update(intralinks_users_by_id[m['userId']])
-            d.update(exchange_members_by_id[m['id']])
+            d.update(removed_exchange_members_by_id[m['id']])
             d.update(exchanges_by_id[m['exchangeId']])
             rows.append(d)
 
@@ -281,10 +282,11 @@ class UserManager:
             for data in results:
                 if data is not None:
                     exchange_members = self._split_intralinks_users_from_exchange_members(data['exchange_members'], intralinks_user_ids)
+                    removed_exchange_members = self._split_intralinks_users_from_exchange_members(data['removed_exchange_members'], intralinks_user_ids)
 
                     self.field_definitions.extend(data['field_definitions'])
                     self.exchange_members.extend(exchange_members)
-                    self.removed_exchange_members.extend(data['removed_exchange_members'])
+                    self.removed_exchange_members.extend(removed_exchange_members)
                     self.groups.extend(data['groups'])
                     self.group_members.extend(data['group_members'])
     
