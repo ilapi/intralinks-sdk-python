@@ -119,7 +119,7 @@ class UserManager:
 
     def prepare_dataframe(self):
         SKIP_INTRALINKS_USER_KEYS = {'firstNameSort', 'lastNameSort', 'organizationSort', 'mobilePhone', 'fax', 'address1', 'address2', 'postalCode', 'city', 'state', 'country', 'title', 'functionalArea', 'industry'}
-        SKIP_EXCHANGE_KEYS = {'createdBy', 'createdOn', 'lastModifiedBy', 'lastModifiedOn', 'pvpEnabled', 'securityLevel', 'type', 'version'}
+        SKIP_EXCHANGE_KEYS = {'createdBy', 'createdOn', 'lastModifiedBy', 'lastModifiedOn', 'pvpEnabled', 'securityLevel', 'type', 'version', 'actions', 'location'}
         SKIP_GROUP_KEYS = {'buyerGroupDetails', 'createdBy', 'createdOn', 'lastModifiedBy', 'lastModifiedOn', 'ftsEnabled', 'groupMemberCount', 'groupMembers', 'version', 'exchange_id'}
         SKIP_EXCHANGE_MEMBER_KEYS = {'version', 'cgFlag', 'title', 'groups', 'exchange_id', 'domain', 'createdBy', 'lastModifiedBy', 'userId'}
 
@@ -137,6 +137,13 @@ class UserManager:
 
         for m in self.exchange_members:
             d = {'row_type':'EXCHANGE_MEMBER'}
+            d.update(intralinks_users_by_id[m['userId']])
+            d.update(exchange_members_by_id[m['id']])
+            d.update(exchanges_by_id[m['exchangeId']])
+            rows.append(d)
+
+        for m in self.removed_exchange_members:
+            d = {'row_type':'DELETED_EXCHANGE_MEMBER'}
             d.update(intralinks_users_by_id[m['userId']])
             d.update(exchange_members_by_id[m['id']])
             d.update(exchanges_by_id[m['exchangeId']])
@@ -185,8 +192,16 @@ class UserManager:
         
         return exchange_members
 
-    def log(self, operation, count=None, step=None):
-        pass
+    def log(self, operation, count=None, step=None, style=None):
+        if operation == 'load_users_and_groups_from_intralinks':
+            if count is not None:
+                print('Start processing {} exchanges'.format(count))
+
+            if step is not None:
+                print('   [{}] - {}'.format(step['id'], step['workspaceName']))
+
+            if style is not None:
+                print('             Error')
 
     def load_exchange_data(self, e):
         result = None
@@ -216,6 +231,7 @@ class UserManager:
 
                 for m in removed_exchange_members:
                     m['exchangeId'] = e['id']
+
             else:
                 removed_exchange_members = []
 

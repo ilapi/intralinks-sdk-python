@@ -11,6 +11,7 @@ class LoginManager:
         self.api_configs = self.load_api_configs()
 
     def set_api_client(self, api_config):
+        api_config = api_config.copy()
         api_version = api_config.pop('version')
 
         if 'session' in api_config and 'config' in api_config:
@@ -51,6 +52,9 @@ class LoginManager:
         return session_data
     
     def save_session_data(self, session_data):
+        if not os.path.exists('data'):
+            os.makedirs('data')
+            
         with open('data/current_session.json', 'w') as fp:
             json.dump(session_data, fp)
     
@@ -65,7 +69,6 @@ class LoginManager:
 
         return session_data
 
-
     def load_api_configs(self, folder='api_keys'):
         api_configs = []
 
@@ -75,6 +78,36 @@ class LoginManager:
                     with open(os.path.join(dirpath, f), 'r') as f:
                         api_configs.append(json.load(f))
         
+        if len(api_configs) == 0:
+            error_message = """Missing API Config files.
+
+Please create a folder "api_keys" and add at least one JSON file (with the .json extension) containing:
+
+    {
+        "version":2,
+        "base_url":"https://api.intralinks.com",
+        "mode":"client_credentials",
+        "client_id":"<your client id / consumer key>",
+        "client_secret":"<your client secret / consumer secret>"
+    }
+
+Where the JSON fields are:
+* version: the API version your Key relates to (typically 2)
+* base_url: the API server, typically:
+    "https://api.intralinks.com" for the Production environment
+    "https://test-api.intralinks.com" for the Test environment
+* mode: the authentication mode associated to your Key. The supported values are:
+    "authcode"
+    "client_credentials"
+* client_id (when version = 2)
+* client_secret (when version = 2)
+* api_key (when version = 1)
+* client (when version = 1)
+
+"""
+            print(error_message)
+            raise Exception(error_message)
+
         return api_configs
 
     def api_config_description(self, config):

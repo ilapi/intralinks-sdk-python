@@ -1,6 +1,3 @@
-import requests
-import intralinks.api
-
 class Config:
     def __init__(self, base_url=None, api_key=None, client=None, session_id=None, timestamp=None):
         self.base_url = base_url

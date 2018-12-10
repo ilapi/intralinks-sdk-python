@@ -31,7 +31,12 @@ class AlertDetailsType:
 
     NEW_UPDATE_PUBLICATION_COMMENT = 'NEW_UPDATE_PUBLICATION_COMMENT'
 
-_EntityField = collections.namedtuple('EntityField', ('name', 'default', 'mandatory'), defaults=(None, False))
+def namedtuple(name, field_names, defaults):
+    entity_class = collections.namedtuple(name, field_names)
+    entity_class.__new__.__defaults__ = tuple(defaults)
+    return entity_class
+
+_EntityField = namedtuple('EntityField', ('name', 'default', 'mandatory'), defaults=(None, False))
 
 user_account_fields = [
     _EntityField('emailId', mandatory=True), 
@@ -42,7 +47,7 @@ user_account_fields = [
     _EntityField('languagePref', default='en_US')
 ]
 
-UserAccount = collections.namedtuple(
+UserAccount = namedtuple(
     'UserAccount', 
     field_names=(f.name for f in user_account_fields), 
     defaults=(f.default for f in user_account_fields if not f.mandatory)
@@ -56,7 +61,7 @@ exchange_fields = [
     _EntityField('description', default=None)
 ]
 
-Exchange = collections.namedtuple(
+Exchange = namedtuple(
     'Exchange', 
     field_names=(f.name for f in exchange_fields), 
     defaults=(f.default for f in exchange_fields if not f.mandatory)
@@ -71,7 +76,7 @@ document_fields = [
     _EntityField('effectiveDate', default=None),
 ]
 
-Document = collections.namedtuple(
+Document = namedtuple(
     'Document', 
     field_names=(f.name for f in document_fields), 
     defaults=(f.default for f in document_fields if not f.mandatory)
@@ -84,7 +89,7 @@ folder_fields = [
     _EntityField('indexingDisabled', default=False)
 ]
 
-Folder = collections.namedtuple(
+Folder = namedtuple(
     'Folder', 
     field_names=(f.name for f in folder_fields), 
     defaults=(f.default for f in folder_fields if not f.mandatory)
@@ -98,7 +103,7 @@ group_fields = [
     _EntityField('defaultFolderPath', default=None)
 ]
 
-Group = collections.namedtuple(
+Group = namedtuple(
     'Group', 
     field_names=(f.name for f in group_fields), 
     defaults=(f.default for f in group_fields if not f.mandatory)
@@ -112,7 +117,7 @@ exchange_member_fields = [
     _EntityField('qnaAttributes', default=None),
 ]
 
-ExchangeMember = collections.namedtuple(
+ExchangeMember = namedtuple(
     'ExchangeMember', 
     field_names=(f.name for f in exchange_member_fields), 
     defaults=(f.default for f in exchange_member_fields if not f.mandatory)
@@ -123,7 +128,7 @@ alert_fields = [
     _EntityField('customSubject', mandatory=True)
 ]
 
-Alert = collections.namedtuple(
+Alert = namedtuple(
     'Alert', 
     field_names=(f.name for f in alert_fields), 
     defaults=(f.default for f in alert_fields if not f.mandatory)
