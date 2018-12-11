@@ -61,11 +61,16 @@ def create_exchange(api_client, exchange, suppress_welcome_alert=True):
 def update_exchange(api_client, exchange, is_phase_updated=False):
     data = entity_to_dict(exchange)
     exchange_id = data['id']
-    data = filter_dict(data, remove_fields=['id', 'actions', 'securityLevel', 'type', 'pvpEnabled', 'htmlViewEnabled', 'location'])
+
+    if is_phase_updated:
+        data = filter_dict(data, remove_fields=['id', 'parentTemplateId', 'actions', 'securityLevel', 'type', 'pvpEnabled', 'htmlViewEnabled', 'location'])
+    else:
+        data = filter_dict(data, remove_fields=['id', 'parentTemplateId', 'phase', 'actions', 'securityLevel', 'type', 'pvpEnabled', 'htmlViewEnabled', 'location'])
+
     data['name'] = data.pop('workspaceName')
 
     response = api_client.update(
-        '/services/workspaces/{}'.format(exchange_id), 
+        '/v2/workspaces/{}'.format(exchange_id), 
         data=json.dumps(data),
         headers={'Content-Type':'application/json'},
         api_version=2
