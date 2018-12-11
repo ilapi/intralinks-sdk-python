@@ -35,13 +35,6 @@ import intralinks.functions.v2.permissions
 import intralinks.functions.v2.fields
 import intralinks.functions.v2.user_accounts
 
-"""
-        self.email = None
-        self.password = None
-        self.is_secureid_required = False
-        self.is_already_logged_in = False
-"""
-
 class IntralinksClient:
     def __init__(self, api_client=None, use_v1=False, max_retry=2):        
         self.api_client = api_client
@@ -155,7 +148,7 @@ class IntralinksClient:
         if self.api_client.is_v1() or self.use_v1:
             return intralinks.functions.v1.user_accounts.get_user_account(self.api_client, email, exchange_id)
         else:
-            return self._retry(lambda: intralinks.functions.v2.user_accounts.get_user_account(self.api_client, email))
+            return self._retry(lambda: intralinks.functions.v2.user_accounts.get_user_account(self.api_client, email, exchange_id))
 
     def create_user_account(self, email, first_name, last_name, organization, phone, language):
         if self.api_client.is_v1() or self.use_v1:
@@ -402,7 +395,23 @@ class IntralinksClient:
         else:
             result = intralinks.functions.v2.exchange_members.create_exchange_member(self.api_client, exchange_id, exchange_member, alert)
         
-        return self._update_param(exchange_member, result, update_param)
+        if update_param:
+            if isinstance(exchange_member, tuple):
+                exchange_member = entity_to_dict(exchange_member)
+            
+            user = exchange_member.pop('user')
+
+            if isinstance(user, tuple):
+                user = entity_to_dict(user)
+            
+            exchange_member.update(user)
+
+            exchange_member['emailId'] = result.pop('email')
+            exchange_member.update(result)
+
+            return exchange_member
+        else:
+            return result
 
     def update_exchange_member(self, exchange, exchange_member, update_param=True):
         exchange_id = self._get_id(exchange)

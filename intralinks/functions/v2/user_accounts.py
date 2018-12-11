@@ -5,7 +5,7 @@ For educational purpose only
 from intralinks.utils.data import get_node_as_list, get_node_as_item
 import urllib.request
 
-def get_user_account(api_client, email):
+def get_user_account2(api_client, email):
     response = api_client.get(
         '/v2/users/{}'.format(urllib.request.quote(email)),
         api_version=2
@@ -15,9 +15,11 @@ def get_user_account(api_client, email):
     response.assert_content_type('application/json')
     response.assert_no_errors()
 
-    return response.data()
+    data = response.data()
 
-def search_directory_user(api_client, email, exchange_id):
+    return get_node_as_item(data, 'user')
+
+def get_user_account(api_client, email, exchange_id):
     response = api_client.get(
         '/v2/workspaces/{}/users'.format(exchange_id), 
         params={'email': email},
@@ -29,10 +31,7 @@ def search_directory_user(api_client, email, exchange_id):
     response.assert_no_errors()
     
     data = response.data()
-    
-    if 'users' not in data:
-        raise Exception(response.url, response.text)
-      
+         
     return get_node_as_item(data, 'users')
 
 def create_user_account(api_client, email, first_name, last_name, organization, phone, language):
