@@ -151,7 +151,7 @@ class ApiResponse:
             self._data = {'error':self.response.text}
 
         else:
-            self._data = self.response.content
+            self._data = self.response.text
         
         return self._data
     
