@@ -51,17 +51,17 @@ class LoginManager:
 
         return session_data
     
-    def save_session_data(self, session_data):
+    def save_session_data(self, session_data, file_path='data/current_session.json'):
         if not os.path.exists('data'):
             os.makedirs('data')
             
-        with open('data/current_session.json', 'w') as fp:
+        with open(file_path, 'w') as fp:
             json.dump(session_data, fp)
     
-    def load_session_data(self):
+    def load_session_data(self, file_path='data/current_session.json'):
         session_data = None
 
-        with open('data/current_session.json', 'r') as fp:
+        with open(file_path, 'r') as fp:
             session_data = json.load(fp)
             
             if 'is_secureid_required' in session_data['session']:
