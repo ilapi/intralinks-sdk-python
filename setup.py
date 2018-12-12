@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="intralinks",
-    version="0.1.4",
+    version="0.1.5",
     author="Olivier Mangez",
     author_email="olivier.mangez@gmail.com",
     description="A SDK for intralinks.com (for educational purpose only)",
