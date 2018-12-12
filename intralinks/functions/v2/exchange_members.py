@@ -17,7 +17,14 @@ def get_exchange_members(api_client, exchange_id):
     
     data = response.data()
     
-    return get_node_as_list(data, 'users')
+    l = get_node_as_list(data, 'users')
+
+    # Fix because the V2 API does not return 'unauthenticatedDocumentAccess' as a boolean
+    for m in l:
+        if 'unauthenticatedDocumentAccess' in m and m['unauthenticatedDocumentAccess'] in {'T', 'F'}:
+            m['unauthenticatedDocumentAccess'] = m['unauthenticatedDocumentAccess'] == 'T'
+
+    return l
 
 def create_exchange_member(api_client, exchange_id, exchange_member=None, alert=None):
     exchange_member_data = entity_to_dict(exchange_member)
@@ -55,8 +62,32 @@ def create_exchange_member(api_client, exchange_id, exchange_member=None, alert=
     
     return get_node_as_item(data, ['userPartials'])
 
-def update_exchange_member(api_client, exchange_id, exchange_member, add_groups=None, remove_groups=None):
-    raise Exception()
+def update_exchange_member(api_client, exchange_id, exchange_member):
+    exchange_member_data = entity_to_dict(exchange_member)
+
+    user_data = entity_to_dict(exchange_member_data.pop('user', dict()))
+    exchange_member_data.update(user_data)
+    
+    exchange_member_data = filter_dict(exchange_member_data, remove_fields={'userId', 'emailId', 'firstName', 'lastName', 'title', 'organization', 'officePhone', 'languagePref'})
+  
+    # Fix because the V2 API does not return 'unauthenticatedDocumentAccess' as a boolean
+    if 'unauthenticatedDocumentAccess' in exchange_member_data and exchange_member_data['unauthenticatedDocumentAccess'] in {'T', 'F'}:
+        exchange_member_data['unauthenticatedDocumentAccess'] = exchange_member_data['unauthenticatedDocumentAccess'] == 'T'
+
+    response = api_client.update(
+        '/v2/workspaces/{}/users'.format(exchange_id),
+        data=json.dumps({'users':[exchange_member_data]}), 
+        headers={'Content-Type':'application/json'},
+        api_version=2
+    )
+    
+    response.assert_status_code(202)
+    response.assert_content_type('application/json')
+    response.assert_no_errors()
+    
+    data = response.data()
+    
+    return get_node_as_item(data, ['userPartials'])
 
 def delete_exchange_member(api_client, exchange_id, id=None, version=None):
     response = api_client.delete(
