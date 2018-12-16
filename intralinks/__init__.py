@@ -4,6 +4,7 @@ For educational purpose only
 """
 
 import intralinks.api
+import intralinks.api.v2
 
 import intralinks.utils.http
 
@@ -112,10 +113,8 @@ class IntralinksClient:
 
     def login(self, email, password, end_other_sessions=False, secure_id_callback=None):
         if self.api_client.is_v1():
-            login_data = None
-
             try:
-                login_data = intralinks.authenticators.v1.authentication.login(self.api_client, email, password)
+                intralinks.authenticators.v1.authentication.login(self.api_client, email, password)
             except intralinks.authenticators.v1.authentication.AlreadyLoggedInException as e:
                 if end_other_sessions:
                     intralinks.authenticators.v1.authentication.special_login(self.api_client, self.api_client.session.email, self.api_client.session.password, secure_id=None, end_other_sessions=True)
@@ -127,10 +126,8 @@ class IntralinksClient:
                     intralinks.authenticators.v1.authentication.special_login(self.api_client, self.api_client.session.email, self.api_client.session.password, secure_id=secure_id, end_other_sessions=end_other_sessions)
 
             intralinks.authenticators.v1.authentication.get_flags(self.api_client)
-
-            return login_data
         else:
-            return intralinks.authenticators.v2.authentication.login(self.api_client, email, password, end_other_sessions)
+            intralinks.authenticators.v2.authentication.login(self.api_client, email, password, end_other_sessions)
     
     def logout(self):
         if self.api_client.is_v1():
@@ -579,3 +576,16 @@ class IntralinksClient:
             return intralinks.functions.v1.fields.get_field_definitions(self.api_client, exchange_id)
         else:
             return self._retry(lambda: intralinks.functions.v2.fields.get_field_definitions(self.api_client, exchange_id))
+
+def new_client(base_url, session_token=None):
+    config = intralinks.api.v2.Config(
+        base_url
+    )
+
+    session = intralinks.api.v2.Session(
+        session_token
+    )
+
+    api_client = intralinks.api.ApiClient(config, session)
+
+    return intralinks.IntralinksClient(api_client)
