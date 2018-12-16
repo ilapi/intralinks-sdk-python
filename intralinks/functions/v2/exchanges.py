@@ -3,6 +3,7 @@ For educational purpose only
 """
 
 from intralinks.utils.data import get_node_as_list, get_node_as_item, filter_dict, entity_to_dict
+from intralinks.utils.booleans import convert_to_bool
 import intralinks.functions.entities
 import json
 
@@ -23,7 +24,13 @@ def get_exchanges(api_client, brand_id=None, user_id=None, is_manager=None):
     
     data = response.data()
     
-    return get_node_as_list(data, 'workspace')
+    l = get_node_as_list(data, 'workspace')
+
+    # Fix because the V2 API does not return 'pvpEnabled' or 'htmlViewEnabled' as a boolean
+    convert_to_bool(l, 'pvpEnabled')
+    convert_to_bool(l, 'htmlViewEnabled')
+
+    return l
 
 def get_exchange(api_client, exchange_id):
     response = api_client.get(
@@ -37,7 +44,13 @@ def get_exchange(api_client, exchange_id):
     
     data = response.data()
 
-    return get_node_as_item(data, 'workspace')
+    e = get_node_as_item(data, 'workspace')
+
+    # Fix because the V2 API does not return 'pvpEnabled' or 'htmlViewEnabled' as a boolean
+    convert_to_bool(e, 'pvpEnabled')
+    convert_to_bool(e, 'htmlViewEnabled')
+
+    return e
 
 def create_exchange(api_client, exchange, suppress_welcome_alert=True):
     exchange_data = {'name' if k == 'workspaceName' else k:v for k,v in entity_to_dict(exchange).items()}
@@ -56,7 +69,7 @@ def create_exchange(api_client, exchange, suppress_welcome_alert=True):
     
     data = response.data()
     
-    return get_node_as_item(data, 'WorkspacePartial')
+    return get_node_as_item(data, 'workspacePartial')
 
 def update_exchange(api_client, exchange, is_phase_updated=False):
     data = entity_to_dict(exchange)

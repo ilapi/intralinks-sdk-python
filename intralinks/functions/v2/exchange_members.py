@@ -3,6 +3,7 @@ For educational purpose only
 """
 
 from intralinks.utils.data import get_node_as_list, get_node_as_item, entity_to_dict, filter_dict
+from intralinks.utils.booleans import convert_to_bool
 import json
 
 def get_exchange_members(api_client, exchange_id):
@@ -20,9 +21,7 @@ def get_exchange_members(api_client, exchange_id):
     l = get_node_as_list(data, 'users')
 
     # Fix because the V2 API does not return 'unauthenticatedDocumentAccess' as a boolean
-    for m in l:
-        if 'unauthenticatedDocumentAccess' in m and m['unauthenticatedDocumentAccess'] in {'T', 'F'}:
-            m['unauthenticatedDocumentAccess'] = m['unauthenticatedDocumentAccess'] == 'T'
+    convert_to_bool(l, 'unauthenticatedDocumentAccess')
 
     return l
 
