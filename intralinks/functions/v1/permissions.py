@@ -15,9 +15,7 @@ def get_document_permissions(api_client, exchange_id, document_id):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
@@ -34,9 +32,7 @@ def get_folder_permissions(api_client, exchange_id, folder_id, include_limited_p
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
@@ -101,12 +97,41 @@ def update_document_permissions(api_client, exchange_id, document_id, add_permis
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
     
     data = response.data()
 
+    return data
+
+def update_folder_content_permissions(api_client, exchange_id, folder_id, add_permissions=None, revoke_permissions=None):
+    xml_data = ['<permissionsFoldersCreateRequest>']
+
+    xml_data.append(to_xml({'entityId':{'id':document_id, 'type':'DOCUMENT'}}, 'contentIdList'))
+
+    if add_permissions:
+        xml_data.append(to_xml([{'permissionInfo': p} for p in add_permissions], 'permissions'))
+    
+    if revoke_permissions:
+        for p in revoke_permissions:
+            p = p.copy()
+            p['permission'] = 'REVOKED'
+            p['drm'] = 'NONE'
+            xml_data.append(to_xml(p, 'permissionInfo'))
+    
+    xml_data.append('</permissionsFoldersCreateRequest>')
+
+    response = api_client.update(
+        '/services/workspaces/permissions/folders', 
+        params={
+            'workspaceId':exchange_id
+        }, 
+        data={'xml':''.join(xml_data)},
+        api_version=1
+    )
+
+    response.check(200, 'text/xml')
+    
+    data = response.data()
 
 def get_permissions2(api_client, exchange_id):
     response = api_client.get(
@@ -117,10 +142,8 @@ def get_permissions2(api_client, exchange_id):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
-    return data['permissions']
+    return get_node_as_item(data, 'permissions')
