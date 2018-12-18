@@ -2,7 +2,7 @@
 For educational purpose only
 """
 
-from intralinks.utils.data import get_node_as_list, entity_to_dict
+from intralinks.utils.data import get_node_as_list, get_node_as_item, entity_to_dict
 from intralinks.utils.xml import to_xml
 import intralinks.functions.v1.exchange_members
 import intralinks.functions.entities
@@ -16,9 +16,7 @@ def get_groups(api_client, exchange_id):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
@@ -34,13 +32,14 @@ def get_groups_and_members(api_client, exchange_id):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
-    return (get_node_as_list(data, ('workspaceGroups', 'workspaceGroup')), get_node_as_list(data, ('workspaceGroupMembers', 'workspaceGroupMember')))
+    return (
+        get_node_as_list(data, ('workspaceGroups', 'workspaceGroup')), 
+        get_node_as_list(data, ('workspaceGroupMembers', 'workspaceGroupMember'))
+    )
 
 def create_group(api_client, exchange_id, group):  
     group_data = entity_to_dict(group)
@@ -54,13 +53,11 @@ def create_group(api_client, exchange_id, group):
         api_version=1
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
     
-    return data['workspaceGroups']['workspaceGroupPartial']
+    return get_node_as_item(data, ('workspaceGroups', 'workspaceGroupPartial'))
 
 def create_groups(api_client, exchange_id, groups):  
     # '5-2-5', 'Multiple Workspace Group creation is not supported'
@@ -90,13 +87,11 @@ def update_group(api_client, exchange_id, group, remove_group_members=None, add_
         api_version=1
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
     
-    return data['workspaceGroups']['workspaceGroupPartial']
+    return get_node_as_item(data, ('workspaceGroups', 'workspaceGroupPartial'))
 
 def delete_group(api_client, exchange_id, id, version, remove_users=False):   
     groups = [{'id':id, 'version':version}]
@@ -124,9 +119,7 @@ def delete_groups(api_client, exchange_id, groups, remove_users=False):
         api_version=1
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
     

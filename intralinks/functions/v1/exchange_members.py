@@ -14,9 +14,7 @@ def get_exchange_members(api_client, exchange_id):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
@@ -33,9 +31,7 @@ def get_removed_exchange_members(api_client, exchange_id):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
@@ -67,13 +63,11 @@ def create_exchange_member(api_client, exchange_id, exchange_member=None, groups
         api_version=1
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
     
-    return get_node_as_item(data, ['workspaceUserPartials', 'workspaceUserPartial'])
+    return get_node_as_item(data, ('workspaceUserPartials', 'workspaceUserPartial'))
 
 def update_exchange_member(api_client, exchange_id, exchange_member, add_groups=None, remove_groups=None):
     keys = ['userId', 'id', 'firstName', 'lastName', 'organization', 'version', 'roleType', 'keyContact', 'qnaCoordinator', 'qnaAttributes']
@@ -127,9 +121,7 @@ def delete_exchange_members(api_client, exchange_id, exchange_members):
         api_version=1
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
     

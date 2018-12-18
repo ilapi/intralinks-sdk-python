@@ -11,9 +11,7 @@ def get_user_account2(api_client, email):
         api_version=2
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
 
     data = response.data()
 
@@ -26,9 +24,7 @@ def get_user_account(api_client, email, exchange_id):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
     
     data = response.data()
          
@@ -51,9 +47,7 @@ def create_user_account(api_client, email, first_name, last_name, organization, 
         api_version=2
     )
     
-    response.assert_status_code(201)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(201, 'application/json')
     
     data = response.data()
     

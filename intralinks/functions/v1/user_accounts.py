@@ -2,7 +2,7 @@
 For educational purpose only
 """
 
-from intralinks.utils.data import get_node_as_list, entity_to_dict
+from intralinks.utils.data import get_node_as_list, get_node_as_item, entity_to_dict
 from intralinks.utils.xml import to_xml
 
 def get_user_account(api_client, email, exchange_id=None):
@@ -15,13 +15,11 @@ def get_user_account(api_client, email, exchange_id=None):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
-    return get_node_as_list(data, ('users', 'user'))[0]
+    return get_node_as_item(data, ('users', 'user'))
 
 def search_directory_user(api_client, email, exchange_id):
     return get_user_account(api_client, email, exchange_id)
@@ -35,9 +33,7 @@ def create_user_account(api_client, user):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
     
     data = response.data()
     

@@ -2,7 +2,7 @@
 For educational purpose only
 """
 
-from intralinks.utils.data import get_node_as_list, entity_to_dict
+from intralinks.utils.data import get_node_as_list, get_node_as_item, entity_to_dict
 from intralinks.utils.xml import to_xml
 import intralinks.functions.entities
 
@@ -17,9 +17,7 @@ def get_exchanges(api_client, brand_id=None, user_id=None, is_manager=None):
         api_version=1
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
@@ -34,13 +32,11 @@ def get_exchange(api_client, exchange_id):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
-    return get_node_as_list(data, 'workspace')[0]
+    return get_node_as_item(data, 'workspace')
 
 def get_exchange_settings(api_client, exchange_id):
     response = api_client.get(
@@ -51,9 +47,7 @@ def get_exchange_settings(api_client, exchange_id):
         api_version=1
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
@@ -69,13 +63,11 @@ def create_exchange(api_client, exchange, suppress_welcome_alert=True):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
-    return data['workspacePartial']
+    return get_node_as_item(data, 'workspacePartial')
 
 def update_exchange(api_client, exchange, is_phase_updated=False):  
     if is_phase_updated:
@@ -91,9 +83,7 @@ def update_exchange(api_client, exchange, is_phase_updated=False):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
@@ -109,9 +99,7 @@ def update_exchange_settings(api_client, exchange_id, settings):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 

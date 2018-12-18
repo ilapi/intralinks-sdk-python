@@ -11,9 +11,7 @@ def get_splash(api_client, exchange_id):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
@@ -31,7 +29,7 @@ def enter_exchange(api_client, exchange_id, accept_splash=None):
 
     data = response.data()
 
-    return data['state']
+    return get_node_as_item(data, 'state')
 
 def delete_exchange_entry(api_client, exchange_id):
     response = api_client.delete(

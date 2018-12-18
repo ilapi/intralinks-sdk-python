@@ -18,9 +18,7 @@ def get_exchanges(api_client, brand_id=None, user_id=None, is_manager=None):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
     
     data = response.data()
     
@@ -38,9 +36,7 @@ def get_exchange(api_client, exchange_id):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
     
     data = response.data()
 
@@ -63,9 +59,7 @@ def create_exchange(api_client, exchange, suppress_welcome_alert=True):
         api_version=2
     )
     
-    response.assert_status_code(201)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(201, 'application/json')
     
     data = response.data()
     
@@ -89,9 +83,7 @@ def update_exchange(api_client, exchange, is_phase_updated=False):
         api_version=2
     )
 
-    response.assert_status_code(202)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(202, 'application/json')
 
     data = response.data()
 
@@ -103,9 +95,7 @@ def get_exchange_settings(api_client, exchange_id):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
     
     data = response.data()
 
@@ -119,9 +109,7 @@ def update_exchange_settings(api_client, exchange_id, settings):
         api_version=2
     )
     
-    response.assert_status_code(201)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(201, 'application/json')
     
     data = response.data()
     

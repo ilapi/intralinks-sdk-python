@@ -89,9 +89,7 @@ def special_login(api_client, email, password, secure_id=None, end_other_session
         api_version=1
     )
         
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
     
     data = response.data()
 
@@ -119,9 +117,7 @@ def get_flags(api_client):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 

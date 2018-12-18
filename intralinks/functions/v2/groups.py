@@ -12,9 +12,7 @@ def get_groups(api_client, exchange_id):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
     
     data = response.data()
     
@@ -27,13 +25,14 @@ def get_groups_and_members(api_client, exchange_id):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
 
     data = response.data()
     
-    return (get_node_as_list(data, 'groups'), get_node_as_list(data, 'workspaceGroupMembers'))
+    return (
+        get_node_as_list(data, 'groups'), 
+        get_node_as_list(data, 'workspaceGroupMembers')
+    )
 
 def create_group(api_client, exchange_id, group):
     group_data = entity_to_dict(group)
@@ -45,9 +44,7 @@ def create_group(api_client, exchange_id, group):
         api_version=2
     )
     
-    response.assert_status_code(201)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(201, 'application/json')
     
     data = response.data()
     
@@ -61,9 +58,7 @@ def create_groups(api_client, exchange_id, groups):
         api_version=2
     )
     
-    response.assert_status_code(201)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(201, 'application/json')
 
     data = response.data()
     
@@ -79,9 +74,7 @@ def create_group_member(api_client, exchange_id, group_id, exchange_member_id):
         api_version=2
     )
     
-    response.assert_status_code(202)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(202, 'application/json')
     
     data = response.data()
     
@@ -98,9 +91,7 @@ def delete_group(api_client, exchange_id, id, version, remove_users=False):
         api_version=2
     )
     
-    response.assert_status_code(202)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(202, 'application/json')
     
     data = response.data()
     
@@ -126,9 +117,7 @@ def update_group(api_client, exchange_id, group, remove_group_members=None, add_
         api_version=2
     )
     
-    response.assert_status_code(202)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(202, 'application/json')
     
     data = response.data()
     

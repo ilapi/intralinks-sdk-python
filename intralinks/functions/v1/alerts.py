@@ -15,9 +15,7 @@ def get_alert_details(api_client, exchange_id, alert_type=None):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 

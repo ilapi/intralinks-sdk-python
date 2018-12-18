@@ -11,9 +11,7 @@ def get_field_definitions(api_client, exchange_id):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
     
     data = response.data()
     
@@ -25,9 +23,7 @@ def get_exchange_custom_fields(api_client, exchange_id):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
     
     data = response.data()
     
@@ -39,9 +35,7 @@ def get_document_custom_fields(api_client, exchange_id, document_id):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
     
     data = response.data()
     
@@ -53,9 +47,7 @@ def get_folder_custom_fields(api_client, exchange_id, folder_id):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
     
     data = response.data()
 
@@ -67,9 +59,7 @@ def get_group_custom_fields(api_client, exchange_id, group_id):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
 
     data = response.data()
 

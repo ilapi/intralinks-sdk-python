@@ -11,9 +11,7 @@ def get_batches(api_client, exchange_id, operation_type="Bulk Upload"):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
     
     data = response.data()
 
@@ -25,9 +23,7 @@ def get_batch_items(api_client, exchange_id, batch_id):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
     
     data = response.data()
 

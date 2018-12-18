@@ -12,9 +12,7 @@ def get_exchange_members(api_client, exchange_id):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
     
     data = response.data()
     
@@ -53,9 +51,7 @@ def create_exchange_member(api_client, exchange_id, exchange_member=None, alert=
         api_version=2
     )
     
-    response.assert_status_code(201)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(201, 'application/json')
     
     data = response.data()
     
@@ -80,9 +76,7 @@ def update_exchange_member(api_client, exchange_id, exchange_member):
         api_version=2
     )
     
-    response.assert_status_code(202)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(202, 'application/json')
     
     data = response.data()
     
@@ -96,9 +90,7 @@ def delete_exchange_member(api_client, exchange_id, id=None, version=None):
         api_version=2
     )
     
-    response.assert_status_code(202)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(202, 'application/json')
     
     data = response.data()
     
