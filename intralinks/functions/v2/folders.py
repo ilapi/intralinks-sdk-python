@@ -3,6 +3,7 @@ For educational purpose only
 """
 
 from intralinks.utils.data import get_node_as_list, get_node_as_item, filter_dict, entity_to_dict
+from intralinks.utils.booleans import convert_to_bool
 import intralinks.functions.entities
 import json
 
@@ -12,45 +13,39 @@ def get_folders(api_client, exchange_id):
         api_version=2
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(200, 'application/json')
     
     data = response.data()
     
-    result = get_node_as_list(data, 'folder')
+    l = get_node_as_list(data, 'folder')
 
-    for r in result:
-        if 'hasNote' in r and r['hasNote'] in {'T', 'F'}:
-            r['hasNote'] = r['hasNote'] == 'T'
+    convert_to_bool(l, 'hasNote')
 
-    return result
+    return l
 
 def create_folder(api_client, exchange_id, folder):
-    folder_data = entity_to_dict(folder)
+    l = create_folders(api_client, exchange_id, [folder])
+    return l[0] if len(l) > 0 else None
+    
+def create_folders(api_client, exchange_id, folders):
+    folders_data = [{'folder':entity_to_dict(f)} for f in folders]
     
     response = api_client.create(
         '/v2/workspaces/{}/folders'.format(exchange_id),
-        data=json.dumps({'folders':[{'folder':folder_data}]}), 
+        data=json.dumps({'folders':folders_data}), 
         headers={'Content-Type':'application/json'},
         api_version=2
     )
     
-    response.assert_status_code(201)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(201, 'application/json')
     
     data = response.data()
     
-    result = get_node_as_item(data, 'folderPartial')
+    l = get_node_as_list(data, 'folderPartial')
 
-    if 'hasNote' in result and result['hasNote'] in {'T', 'F'}:
-        result['hasNote'] = result['hasNote'] == 'T'
+    convert_to_bool(l, 'hasNote')
 
-    return result
-
-def create_folders(api_client, exchange_id, folders):
-    raise Exception()
+    return l
     
 def update_folder(api_client, exchange_id, folder):
     folder_data = entity_to_dict(folder)
@@ -63,9 +58,7 @@ def update_folder(api_client, exchange_id, folder):
         api_version=2
     )
     
-    response.assert_status_code(202)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(202, 'application/json')
     
     data = response.data()
     
@@ -76,23 +69,37 @@ def update_folder(api_client, exchange_id, folder):
 
     return result
 
-def delete_folder(api_client, exchange_id, id, version, delete_folder_contents=True):
+def delete_folder(api_client, exchange_id, folder, delete_folder_contents=True):
     response = api_client.delete(
-        '/v2/workspaces/{}/folders/{}'.format(exchange_id, id),
+        '/v2/workspaces/{}/folders/{}'.format(exchange_id, folder['id']),
         params={
-            'version':version, 
+            'version':folder['version'], 
             'deleteFolderContents': 'true' if delete_folder_contents else 'false'
         },
         api_version=2
     )
     
-    response.assert_status_code(202)
-    response.assert_content_type('application/json')
-    response.assert_no_errors()
+    response.check(202, 'application/json')
     
     data = response.data()
     
     return data
-    
+
 def delete_folders(api_client, exchange_id, folders):
-    raise Exception()
+    """
+        Not documented
+    """
+    folder_data = [{'id':f['id'], 'version':f['version']} for f in folders]
+
+    response = api_client.delete(
+        '/v2/workspaces/{}/folders'.format(exchange_id),
+        data=json.dumps({'folders':folder_data}),
+        headers={'Content-Type':'application/json'},
+        api_version=2
+    )
+    
+    response.check(202, 'application/json')
+    
+    data = response.data()
+    
+    return data

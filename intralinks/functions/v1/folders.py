@@ -2,7 +2,7 @@
 For educational purpose only
 """
 
-from intralinks.utils.data import get_node_as_list, entity_to_dict
+from intralinks.utils.data import get_node_as_list, get_node_as_item, entity_to_dict
 from intralinks.utils.xml import to_xml
 import intralinks.functions.entities
 
@@ -19,9 +19,7 @@ def get_folders(api_client, exchange_id, folder_id=None):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
@@ -41,9 +39,7 @@ def get_folder_with_note(api_client, exchange_id, folder_id):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
@@ -61,18 +57,14 @@ def create_folder(api_client, exchange_id, folder):
         api_version=1
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
     
-    return data['folderPartial']
+    return get_node_as_item(data, 'folderPartial')
 
 def create_folders(api_client, exchange_id, folders):
-    keys = {'name', 'parentId', 'indexingDisabled', 'note'}
-
-    created_folders = [{k:f[k] for k in keys if k in f} for f in folders]
+    created_folders = [entity_to_dict(f) for f in folders]
 
     xml_data = ['<folderCreateRequest>']
 
@@ -90,13 +82,11 @@ def create_folders(api_client, exchange_id, folders):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
     
     data = response.data()
     
-    return data['folderPartial']
+    return get_node_as_list(data, 'folderPartial')
 
 def update_folder(api_client, exchange_id, folder):
     folder_data = entity_to_dict(folder)
@@ -110,26 +100,22 @@ def update_folder(api_client, exchange_id, folder):
         api_version=1
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
     
-    return data['folderPartial']
+    return get_node_as_item(data, 'folderPartial')
 
-def delete_folder(api_client, exchange_id, id, version):   
-    folders = [{'id':id, 'version':version}]
-
-    return delete_folders(api_client, exchange_id, folders)
+def delete_folder(api_client, exchange_id, folder):   
+    return delete_folders(api_client, exchange_id, [folder])
 
 def delete_folders(api_client, exchange_id, folders): 
     deleted_folders = [
         {
-            'id':g['id'], 
-            'version':g['version'], 
+            'id':f['id'], 
+            'version':f['version'], 
             'type':'FOLDER'
-        } for g in folders
+        } for f in folders
     ]
      
     response = api_client.delete(
@@ -142,9 +128,7 @@ def delete_folders(api_client, exchange_id, folders):
         api_version=1
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
     

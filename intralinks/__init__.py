@@ -62,9 +62,16 @@ class IntralinksClient:
 
     def _update_param_as_list(self, entities, result, update_param=True):
         if update_param:
+            new_entities = []
+
             for e, r in zip(entities, result):
+                if isinstance(e, tuple):
+                    e = entity_to_dict(e)
+
+                new_entities.append(e)
                 e.update(r)
-            return entities
+
+            return new_entities
         else:
             return result
     
@@ -259,9 +266,9 @@ class IntralinksClient:
         if self.api_client.is_v1() or self.use_v1:
             result = intralinks.functions.v1.folders.create_folders(self.api_client, exchange_id, folders)
         else:
-            raise Exception()
-        
-        self._update_param_as_list(folders, result, update_param)
+            result = intralinks.functions.v2.folders.create_folders(self.api_client, exchange_id, folders)
+
+        return self._update_param_as_list(folders, result, update_param)
 
     def update_folder(self, exchange, folder, update_param=True):
         exchange_id = self._get_id(exchange)
@@ -275,13 +282,11 @@ class IntralinksClient:
 
     def delete_folder(self, exchange, folder):
         exchange_id = self._get_id(exchange)
-        id = folder['id']
-        version = folder['version']
 
         if self.api_client.is_v1() or self.use_v1:
-            return intralinks.functions.v1.folders.delete_folder(self.api_client, exchange_id, id, version)
+            return intralinks.functions.v1.folders.delete_folder(self.api_client, exchange_id, folder)
         else:
-            return intralinks.functions.v2.folders.delete_folder(self.api_client, exchange_id, id, version)
+            return intralinks.functions.v2.folders.delete_folder(self.api_client, exchange_id, folder)
 
     def delete_folders(self, exchange, folders):
         exchange_id = self._get_id(exchange)
@@ -289,7 +294,12 @@ class IntralinksClient:
         if self.api_client.is_v1() or self.use_v1:
             return intralinks.functions.v1.folders.delete_folders(self.api_client, exchange_id, folders)
         else:
-            return intralinks.functions.v2.folders.delete_folders(self.api_client, exchange_id, folders)
+            results = []
+
+            for folder in folders:
+                results.append(intralinks.functions.v2.folders.delete_folder(self.api_client, exchange_id, folder))
+
+            return results
 
     ###########################################################################################################
     # Documents & Files
@@ -309,7 +319,7 @@ class IntralinksClient:
         if self.api_client.is_v1() or self.use_v1:
             result = intralinks.functions.v1.documents.create_document(self.api_client, exchange_id, document, file=file, batch_id=batch_id)
         else:
-            result = intralinks.functions.v2.documents.create_document(self.api_client, exchange_id, document)
+            result = intralinks.functions.v2.documents.create_document(self.api_client, exchange_id, document, batch_id=batch_id)
         
         return self._update_param(document, result, update_param)
 
@@ -317,9 +327,9 @@ class IntralinksClient:
         exchange_id = self._get_id(exchange)
 
         if self.api_client.is_v1() or self.use_v1:
-            return intralinks.functions.v1.documents.create_document(self.api_client, exchange_id, documents, batch_id)
+            return intralinks.functions.v1.documents.create_documents(self.api_client, exchange_id, documents, batch_id)
         else:
-            raise Exception()
+            return intralinks.functions.v2.documents.create_documents(self.api_client, exchange_id, documents, batch_id)
 
     def download_file(self, exchange, document, file_path):
         exchange_id = self._get_id(exchange)
@@ -351,13 +361,11 @@ class IntralinksClient:
 
     def delete_document(self, exchange, document):
         exchange_id = self._get_id(exchange)
-        id = document['id']
-        version = document['version']
 
         if self.api_client.is_v1() or self.use_v1:
-            return intralinks.functions.v1.documents.delete_document(self.api_client, exchange_id, id, version)
+            return intralinks.functions.v1.documents.delete_document(self.api_client, exchange_id, document)
         else:
-            return intralinks.functions.v2.documents.delete_document(self.api_client, exchange_id, id, version)
+            return intralinks.functions.v2.documents.delete_document(self.api_client, exchange_id, document)
 
     def delete_documents(self, exchange, documents):
         exchange_id = self._get_id(exchange)

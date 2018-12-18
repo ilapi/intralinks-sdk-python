@@ -2,7 +2,7 @@
 For educational purpose only
 """
 
-from intralinks.utils.data import get_node_as_list, entity_to_dict
+from intralinks.utils.data import get_node_as_list, get_node_as_item, entity_to_dict
 from intralinks.utils.xml import to_xml
 import intralinks.functions.entities
 import os.path
@@ -16,9 +16,7 @@ def get_documents(api_client, exchange_id):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
@@ -40,13 +38,11 @@ def get_access_statuses(api_client, exchange_id, document_id, max_retries=5):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
-    return data['reportResponse']
+    return get_node_as_item(data, 'reportResponse')
 
 def create_document(api_client, exchange_id, document, file=None, permissions=None, batch_id=None):
     document_data = entity_to_dict(document)
@@ -72,18 +68,16 @@ def create_document(api_client, exchange_id, document, file=None, permissions=No
         api_version=1
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
     
     data = response.data()
     
-    return data['documentPartial']
+    return get_node_as_item(data, 'documentPartial')
 
 def create_documents(api_client, exchange_id, documents, batch_id=None):
-    keys = {'name', 'parentId', 'note', 'effectiveDate'}
+    #keys = {'name', 'parentId', 'note', 'effectiveDate'}
 
-    created_documents = [{k:d[k] for k in keys if k in d} for d in documents]
+    created_documents = [entity_to_dict(d) for d in documents]
 
     xml_data = ['<documentCreateRequest>']
 
@@ -102,13 +96,11 @@ def create_documents(api_client, exchange_id, documents, batch_id=None):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
     
     data = response.data()
     
-    return data['documentPartial']
+    return get_node_as_list(data, 'documentPartial')
 
 def update_document(api_client, exchange_id, document, file=None, permissions=None):
     document_data = entity_to_dict(document)
@@ -139,12 +131,10 @@ def update_document(api_client, exchange_id, document, file=None, permissions=No
     
     data = response.data()
     
-    return data['documentPartial']
+    return get_node_as_item(data, 'documentPartial')
 
-def delete_document(api_client, exchange_id, id, version):   
-    documents = [{'id':id, 'version':version}]
-
-    return delete_documents(api_client, exchange_id, documents)
+def delete_document(api_client, exchange_id, document):   
+    return delete_documents(api_client, exchange_id, [document])
 
 def delete_documents(api_client, exchange_id, documents): 
     deleted_documents = [
@@ -165,9 +155,7 @@ def delete_documents(api_client, exchange_id, documents):
         api_version=1
     )
     
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
     
