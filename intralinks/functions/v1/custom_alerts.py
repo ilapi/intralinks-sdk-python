@@ -2,18 +2,9 @@
 For educational purpose only
 """
 
+from intralinks.functions.entities import AlertResourceType
+from intralinks.utils.data import get_node_as_list
 from intralinks.utils.xml import to_xml
-
-class AlertResourceType:
-    EXCHANGE = 9
-    TEMPLATE = 8
-
-class AlertType:
-    NEW_DOCUMENT_SINGLE = 0
-    NEW_DOCUMENT_BULK = 2
-    NEW_DOCUMENT_MULTIFILE = 145
-    WELCOME_USER_NEW = 113
-    WELCOME_USER_EXISTING = 109
 
 def get_custom_alerts(api_client, exchange_id=None, template_id=None, alert_type=None, alert_locale=None):
     params = {
@@ -35,13 +26,11 @@ def get_custom_alerts(api_client, exchange_id=None, template_id=None, alert_type
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 
-    return data
+    return get_node_as_list(data, ('customAlerts', 'customAlert'))
 
 def set_custom_alerts(api_client, custom_alert):
     response = api_client.create(
@@ -50,9 +39,7 @@ def set_custom_alerts(api_client, custom_alert):
         api_version=1
     )
 
-    response.assert_status_code(200)
-    response.assert_content_type('text/xml')
-    response.assert_no_errors()
+    response.check(200, 'text/xml')
 
     data = response.data()
 

@@ -31,6 +31,17 @@ class AlertDetailsType:
 
     NEW_UPDATE_PUBLICATION_COMMENT = 'NEW_UPDATE_PUBLICATION_COMMENT'
 
+class AlertResourceType:
+    EXCHANGE = 9
+    TEMPLATE = 8
+
+class AlertType:
+    NEW_DOCUMENT_SINGLE = 0
+    NEW_DOCUMENT_BULK = 2
+    NEW_DOCUMENT_MULTIFILE = 145
+    WELCOME_USER_NEW = 113
+    WELCOME_USER_EXISTING = 109
+
 def namedtuple(name, field_names, defaults):
     entity_class = collections.namedtuple(name, field_names)
     entity_class.__new__.__defaults__ = tuple(defaults)
