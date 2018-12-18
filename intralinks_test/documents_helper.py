@@ -1,12 +1,17 @@
 import intralinks_test.conftest
 from intralinks.functions.entities import Folder, Document
 
-def test_documents(il, test_data):
-    e = intralinks_test.conftest.test_exchange(il, test_data)
-
-    # Check that there is no documents
+def precondition(il, e):
     ds = il.get_documents(e)
     assert len(ds) == 0, 'The exchange contains {} document(s)'.format(len(ds))
+
+    fs = il.get_folders(e)
+    assert len(fs) == 0, 'The exchange contains {} folders(s)'.format(len(fs))
+
+def test_create_update_delete_document(il, test_data):
+    e = intralinks_test.conftest.test_exchange(il, test_data)
+
+    precondition(il, e)
 
     # Scenario
     # 1. Create a folder
@@ -69,3 +74,30 @@ def test_documents(il, test_data):
     il.delete_folder(e, f)
     fs = il.get_folders(e)
     assert len(fs) == 0
+
+def test_create_delete_documents(il, test_data):
+    e = intralinks_test.conftest.test_exchange(il, test_data)
+
+    precondition(il, e)
+
+    # 1. Create folders
+    il.create_folders(e, [Folder('Folder for doc 1'), Folder('Folder for doc 2')])
+    fs = il.get_folders(e)
+    assert len(fs) == 2
+
+    # x. Create documents
+    documents = [Document('Document {}'.format(i) , f['id']) for i, f in enumerate(fs)]
+    il.create_documents(e, documents)
+    ds = il.get_documents(e)
+    assert len(documents) == len(ds)
+
+    # x. Delete the documents
+    il.delete_documents(e, ds)
+    ds = il.get_documents(e)
+    assert len(ds) == 0
+
+    # x. Delete the folders
+    il.delete_folders(e, fs)
+    fs = il.get_folders(e)
+    assert len(fs) == 0
+
