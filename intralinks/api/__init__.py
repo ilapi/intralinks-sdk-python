@@ -207,6 +207,11 @@ class ApiResponse:
 
         raise ApiException(code, subcode, message, self.response)
 
+    def check(self, expected_status_code, expected_content_type):
+        self.assert_status_code(expected_status_code)
+        self.assert_content_type(expected_content_type)
+        self.assert_no_errors()
+
     def assert_status_code(self, expected_status_code):
         if isinstance(expected_status_code, int):
             expected_status_code = {expected_status_code}
