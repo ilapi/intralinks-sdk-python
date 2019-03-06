@@ -228,13 +228,13 @@ class IntralinksClient:
 
         return intralinks.functions.v1.splashes.download_splash_image(self.api_client, exchange_id, path_without_extension)
     
-    def enter_exchange(self, exchange, accept_splash=None):
+    def enter_exchange(self, exchange, accept_splash=None, one_time_password=None):
         exchange_id = self._get_id(exchange)
 
         if self.api_client.is_v1() or self.use_v1:
-            return intralinks.functions.v1.splashes.enter_exchange(self.api_client, exchange_id, accept_splash=accept_splash)
+            return intralinks.functions.v1.splashes.enter_exchange(self.api_client, exchange_id, accept_splash=accept_splash, one_time_password=one_time_password)
         else:
-            return intralinks.functions.v2.splashes.enter_exchange(self.api_client, exchange_id, accept_splash=accept_splash)
+            return intralinks.functions.v2.splashes.enter_exchange(self.api_client, exchange_id, accept_splash=accept_splash, one_time_password=one_time_password)
     
     ###########################################################################################################
     # Folders
