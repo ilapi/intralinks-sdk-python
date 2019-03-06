@@ -17,13 +17,18 @@ def get_splash(api_client, exchange_id):
 
     return data
 
-def enter_exchange(api_client, exchange_id, accept_splash=None):
+def enter_exchange(api_client, exchange_id, accept_splash=None, one_time_password=False):
+    if one_time_password:
+        enter_content = {'xml':to_xml({'acceptSplash':accept_splash, 'oneTimePassword':one_time_password }, 'workspaceEntryRequest')}
+    else:
+        enter_content = {'xml':to_xml({'acceptSplash':accept_splash}, 'workspaceEntryRequest')}
+
     response = api_client.create(
         '/services/workspaces/entry', 
         params={
             'workspaceId':exchange_id
         }, 
-        data={'xml':to_xml({'acceptSplash':accept_splash}, 'workspaceEntryRequest')},
+        data=enter_content,
         api_version=1
     )
 
